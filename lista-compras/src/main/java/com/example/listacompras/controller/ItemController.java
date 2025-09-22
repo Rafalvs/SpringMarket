@@ -1,13 +1,10 @@
-package com.example.listacompras.web;
+package com.example.listacompras.controller;
 
 import com.example.listacompras.model.Item;
-import com.example.listacompras.repository.ItemRepository;
+import com.example.listacompras.service.ItemService;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.server.ResponseStatusException;
-import org.springframework.http.HttpStatus;
-
 import java.net.URI;
 import java.util.List;
 
@@ -16,46 +13,36 @@ import java.util.List;
 @CrossOrigin(origins = "*")
 public class ItemController {
 
-    private final ItemRepository repo;
+    private final ItemService service;
 
-    public ItemController(ItemRepository repo) {
-        this.repo = repo;
+    public ItemController(ItemService service) {
+        this.service = service;
     }
 
     @GetMapping
     public List<Item> listar() {
-        return repo.findAll();
+        return service.listar();
     }
 
     @GetMapping("/{id}")
     public Item buscar(@PathVariable Long id) {
-        return repo.findById(id)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Item não encontrado"));
+        return service.buscar(id);
     }
 
     @PostMapping
     public ResponseEntity<Item> criar(@Valid @RequestBody Item novo) {
-        Item salvo = repo.save(novo);
+        Item salvo = service.salvar(novo);
         return ResponseEntity.created(URI.create("/api/itens/" + salvo.getId())).body(salvo);
     }
 
     @PutMapping("/{id}")
     public Item atualizar(@PathVariable Long id, @Valid @RequestBody Item atualizacao) {
-        return repo.findById(id).map(existente -> {
-            existente.setNome(atualizacao.getNome());
-            existente.setQuantidade(atualizacao.getQuantidade());
-            existente.setPreco(atualizacao.getPreco());
-            existente.setComprado(atualizacao.isComprado());
-            return repo.save(existente);
-        }).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Item não encontrado"));
+        return service.atualizar(id, atualizacao);
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> remover(@PathVariable Long id) {
-        if (!repo.existsById(id)) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Item não encontrado");
-        }
-        repo.deleteById(id);
+        service.remover(id);
         return ResponseEntity.noContent().build();
     }
 }
