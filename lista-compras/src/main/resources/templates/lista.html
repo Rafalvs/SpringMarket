@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Lista de Compras</title>
+    <meta charset="UTF-8">
+</head>
+<body>
+    <h1>Lista de Compras</h1>
+
+    <!-- Formulário para adicionar/editar item -->
+    <form th:action="@{/lista/salvar}" th:object="${item}" method="post">
+        <input type="hidden" th:field="*{id}" />
+        Nome: <input type="text" th:field="*{nome}" required />
+        Quantidade: <input type="number" th:field="*{quantidade}" min="1" required />
+        Preço: <input type="number" th:field="*{preco}" step="0.01" min="0" required />
+        Comprado: <input type="checkbox" th:field="*{comprado}" />
+        <button type="submit">Salvar</button>
+    </form>
+
+    <table border="1">
+        <tr>
+            <th>Nome</th>
+            <th>Quantidade</th>
+            <th>Preço</th>
+            <th>Comprado</th>
+            <th>Ações</th>
+        </tr>
+        <tr th:each="item : ${itens}">
+            <td th:text="${item.nome}"></td>
+            <td th:text="${item.quantidade}"></td>
+            <td th:text="${item.preco}"></td>
+            <td th:text="${item.comprado ? 'Sim' : 'Não'}"></td>
+            <td>
+                <a th:href="@{'/lista/editar/' + ${item.id}}">Editar</a>
+                <a th:href="@{'/lista/excluir/' + ${item.id}}" onclick="return confirm('Excluir?')">Excluir</a>
+            </td>
+        </tr>
+    </table>
+</body>
+</html>

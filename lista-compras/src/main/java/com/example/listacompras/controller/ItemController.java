@@ -4,6 +4,8 @@ import com.example.listacompras.model.Item;
 import com.example.listacompras.service.ItemService;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import java.net.URI;
 import java.util.List;
@@ -44,5 +46,46 @@ public class ItemController {
     public ResponseEntity<Void> remover(@PathVariable Long id) {
         service.remover(id);
         return ResponseEntity.noContent().build();
+    }
+}
+
+@Controller
+@RequestMapping("/lista")
+class ItemWebController {
+
+    private final ItemService itemService;
+
+    public ItemWebController(ItemService itemService) {
+        this.itemService = itemService;
+    }
+
+    @GetMapping
+    public String mostrarLista(Model model) {
+        model.addAttribute("itens", itemService.listar());
+        model.addAttribute("item", new Item());
+        return "lista";
+    }
+
+    @PostMapping("/salvar")
+    public String salvar(@ModelAttribute Item item) {
+        if (item.getId() == null) {
+            itemService.salvar(item);
+        } else {
+            itemService.atualizar(item.getId(), item);
+        }
+        return "redirect:/lista";
+    }
+
+    @GetMapping("/editar/{id}")
+    public String editar(@PathVariable Long id, Model model) {
+        model.addAttribute("item", itemService.buscar(id));
+        model.addAttribute("itens", itemService.listar());
+        return "lista";
+    }
+
+    @GetMapping("/excluir/{id}")
+    public String excluir(@PathVariable Long id) {
+        itemService.remover(id);
+        return "redirect:/lista";
     }
 }
