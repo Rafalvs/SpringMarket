@@ -74,14 +74,14 @@
                             </tr>
                         </thead>
                         <tbody>
-                            <tr th:each="item : ${itens}" th:class="${item.comprado} ? 'bg-success bg-opacity-20' : ''">
+                            <tr th:each="item : ${itens}" th:class="${item.comprado ? 'bg-success bg-opacity-20' : ''}">
                                 <td class="font-semibold" th:text="${item.nome}"></td>
                                 <td class="text-center">
                                     <div class="badge badge-secondary badge-outline" th:text="${item.quantidade}"></div>
                                 </td>
                                 <td class="text-center font-mono">
                                     <span class="text-accent font-bold">R$ </span>
-                                    <span th:text="${#numbers.formatDecimal(item.preco, 1, 2)}"></span>
+                                    <span th:text="${item.preco}"></span>
                                 </td>
                                 <td class="text-center">
                                     <div th:if="${item.comprado}" class="badge badge-success gap-2">
@@ -117,22 +117,25 @@
                         </div>
                         <div class="stat-title">Total de Itens</div>
                         <div class="stat-value text-primary" th:text="${#lists.size(itens)}">0</div>
+                        <div class="stat-desc">Itens na sua lista</div>
                     </div>
                     
                     <div class="stat">
                         <div class="stat-figure text-success">
                             ✅
                         </div>
-                        <div class="stat-title">Já Comprados</div>
-                        <div class="stat-value text-success" th:text="${#lists.size(#lists.select(itens, item.comprado))}">0</div>
+                        <div class="stat-title">Status</div>
+                        <div class="stat-value text-success">OK</div>
+                        <div class="stat-desc">Sistema funcionando</div>
                     </div>
                     
                     <div class="stat">
-                        <div class="stat-figure text-warning">
-                            ⏳
+                        <div class="stat-figure text-info">
+                            🛒
                         </div>
-                        <div class="stat-title">Pendentes</div>
-                        <div class="stat-value text-warning" th:text="${#lists.size(itens) - #lists.size(#lists.select(itens, item.comprado))}">0</div>
+                        <div class="stat-title">Lista Ativa</div>
+                        <div class="stat-value text-info">✓</div>
+                        <div class="stat-desc">Pronta para uso</div>
                     </div>
                 </div>
             </div>
