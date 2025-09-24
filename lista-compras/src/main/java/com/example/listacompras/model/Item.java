@@ -1,7 +1,7 @@
 package com.example.listacompras.model;
 
-import jakarta.persistence.*;
-import jakarta.validation.constraints.*;
+import javax.persistence.*;
+import javax.validation.constraints.*;
 import java.math.BigDecimal;
 
 @Entity

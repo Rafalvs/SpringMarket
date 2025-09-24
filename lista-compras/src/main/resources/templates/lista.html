@@ -1,40 +1,142 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org" data-theme="light">
 <head>
+
+    <link href="https://cdn.jsdelivr.net/npm/daisyui@5" rel="stylesheet" type="text/css" />
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <link href="https://cdn.jsdelivr.net/npm/daisyui@5/themes.css" rel="stylesheet" type="text/css" />
+
     <title>Lista de Compras</title>
     <meta charset="UTF-8">
 </head>
-<body>
-    <h1>Lista de Compras</h1>
+<body class="bg-base-100 min-h-screen">
+    <div class="container mx-auto p-6">
+        <h1 class="text-4xl font-bold text-center mb-8 text-primary">🛒 Lista de Compras</h1>
 
-    <!-- Formulário para adicionar/editar item -->
-    <form th:action="@{/lista/salvar}" th:object="${item}" method="post">
-        <input type="hidden" th:field="*{id}" />
-        Nome: <input type="text" th:field="*{nome}" required />
-        Quantidade: <input type="number" th:field="*{quantidade}" min="1" required />
-        Preço: <input type="number" th:field="*{preco}" step="0.01" min="0" required />
-        Comprado: <input type="checkbox" th:field="*{comprado}" />
-        <button type="submit">Salvar</button>
-    </form>
+        <!-- Formulário para adicionar/editar item -->
+        <div class="card bg-base-200 shadow-xl mb-8">
+            <div class="card-body">
+                <h2 class="card-title text-2xl mb-4">
+                    <span class="text-secondary">📝</span> Adicionar Item
+                </h2>
+                <form th:action="@{/lista/salvar}" th:object="${item}" method="post" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                    <input type="hidden" th:field="*{id}" />
+                    
+                    <div class="form-control">
+                        <label class="label">
+                            <span class="label-text font-semibold">Nome do Item</span>
+                        </label>
+                        <input type="text" th:field="*{nome}" required class="input input-bordered input-primary" placeholder="Ex: Leite" />
+                    </div>
+                    
+                    <div class="form-control">
+                        <label class="label">
+                            <span class="label-text font-semibold">Quantidade</span>
+                        </label>
+                        <input type="number" th:field="*{quantidade}" min="1" required class="input input-bordered input-secondary" placeholder="1" />
+                    </div>
+                    
+                    <div class="form-control">
+                        <label class="label">
+                            <span class="label-text font-semibold">Preço (R$)</span>
+                        </label>
+                        <input type="number" th:field="*{preco}" step="0.01" min="0" required class="input input-bordered input-accent" placeholder="0.00" />
+                    </div>
+                    
+                    <div class="form-control">
+                        <label class="label cursor-pointer">
+                            <span class="label-text font-semibold">Já comprou?</span>
+                            <input type="checkbox" th:field="*{comprado}" class="checkbox checkbox-success" />
+                        </label>
+                        <button type="submit" class="btn btn-primary btn-block mt-2">
+                            <span class="text-lg">💾</span> Salvar Item
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
 
-    <table border="1">
-        <tr>
-            <th>Nome</th>
-            <th>Quantidade</th>
-            <th>Preço</th>
-            <th>Comprado</th>
-            <th>Ações</th>
-        </tr>
-        <tr th:each="item : ${itens}">
-            <td th:text="${item.nome}"></td>
-            <td th:text="${item.quantidade}"></td>
-            <td th:text="${item.preco}"></td>
-            <td th:text="${item.comprado ? 'Sim' : 'Não'}"></td>
-            <td>
-                <a th:href="@{'/lista/editar/' + ${item.id}}">Editar</a>
-                <a th:href="@{'/lista/excluir/' + ${item.id}}" onclick="return confirm('Excluir?')">Excluir</a>
-            </td>
-        </tr>
-    </table>
+        <!-- Tabela de itens -->
+        <div class="card bg-base-100 shadow-xl">
+            <div class="card-body">
+                <h2 class="card-title text-2xl mb-6">
+                    <span class="text-info">📋</span> Seus Itens de Compra
+                </h2>
+                <div class="overflow-x-auto">
+                    <table class="table table-zebra w-full">
+                        <thead>
+                            <tr class="bg-primary text-primary-content">
+                                <th class="text-center">🏷️ Nome</th>
+                                <th class="text-center">📦 Quantidade</th>
+                                <th class="text-center">💰 Preço</th>
+                                <th class="text-center">✅ Status</th>
+                                <th class="text-center">⚙️ Ações</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr th:each="item : ${itens}" th:class="${item.comprado} ? 'bg-success bg-opacity-20' : ''">
+                                <td class="font-semibold" th:text="${item.nome}"></td>
+                                <td class="text-center">
+                                    <div class="badge badge-secondary badge-outline" th:text="${item.quantidade}"></div>
+                                </td>
+                                <td class="text-center font-mono">
+                                    <span class="text-accent font-bold">R$ </span>
+                                    <span th:text="${#numbers.formatDecimal(item.preco, 1, 2)}"></span>
+                                </td>
+                                <td class="text-center">
+                                    <div th:if="${item.comprado}" class="badge badge-success gap-2">
+                                        ✅ Comprado
+                                    </div>
+                                    <div th:unless="${item.comprado}" class="badge badge-warning gap-2">
+                                        ⏳ Pendente
+                                    </div>
+                                </td>
+                                <td class="text-center">
+                                    <div class="join">
+                                        <a th:href="@{'/lista/editar/' + ${item.id}}" class="btn btn-sm btn-info join-item tooltip" data-tip="Editar item">
+                                            ✏️
+                                        </a>
+                                        <a th:href="@{'/lista/excluir/' + ${item.id}}" 
+                                           onclick="return confirm('Tem certeza que deseja excluir este item?')" 
+                                           class="btn btn-sm btn-error join-item tooltip" 
+                                           data-tip="Excluir item">
+                                            🗑️
+                                        </a>
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                
+                <!-- Estatísticas -->
+                <div class="stats shadow mt-6 w-full">
+                    <div class="stat">
+                        <div class="stat-figure text-primary">
+                            📊
+                        </div>
+                        <div class="stat-title">Total de Itens</div>
+                        <div class="stat-value text-primary" th:text="${#lists.size(itens)}">0</div>
+                    </div>
+                    
+                    <div class="stat">
+                        <div class="stat-figure text-success">
+                            ✅
+                        </div>
+                        <div class="stat-title">Já Comprados</div>
+                        <div class="stat-value text-success" th:text="${#lists.size(#lists.select(itens, item.comprado))}">0</div>
+                    </div>
+                    
+                    <div class="stat">
+                        <div class="stat-figure text-warning">
+                            ⏳
+                        </div>
+                        <div class="stat-title">Pendentes</div>
+                        <div class="stat-value text-warning" th:text="${#lists.size(itens) - #lists.size(#lists.select(itens, item.comprado))}">0</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 </body>
 </html>

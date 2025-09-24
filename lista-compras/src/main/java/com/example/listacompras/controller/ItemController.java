@@ -2,7 +2,7 @@ package com.example.listacompras.controller;
 
 import com.example.listacompras.model.Item;
 import com.example.listacompras.service.ItemService;
-import jakarta.validation.Valid;
+import javax.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
